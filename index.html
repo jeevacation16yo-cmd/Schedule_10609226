@@ -111,7 +111,18 @@ function load(k,def){try{var v=localStorage.getItem(k);return v===null?def:v}cat
 function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 
 var todayIdx=(function(){var g=new Date().getDay();return g===0?-1:g-1})();
-var week=parseInt(load("sch_week","1"),10);if(week!==1&&week!==2)week=1;
+// Якорь: понедельник 12.10.2026 = 1 неделя. Дальше недели чередуются сами.
+function calcWeek(){
+  var n=new Date();
+  var d=new Date(n.getFullYear(),n.getMonth(),n.getDate());
+  if(d.getDay()===0)d.setDate(d.getDate()+1); // воскресенье -> показываем следующую неделю
+  var a=new Date(2026,9,12);
+  var days=Math.round((d-a)/864e5);
+  var k=Math.floor(days/7);
+  return (((k%2)+2)%2===0)?1:2;
+}
+var curWeek=calcWeek();
+var week=curWeek;
 var day=todayIdx<0?0:todayIdx;
 
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -124,7 +135,9 @@ function renderDays(){
 }
 function renderWeeks(){
   document.querySelectorAll("#weeks button").forEach(function(b){
-    b.setAttribute("aria-selected",String(parseInt(b.dataset.w,10)===week));
+    var w=parseInt(b.dataset.w,10);
+    b.setAttribute("aria-selected",String(w===week));
+    b.innerHTML=w+" неделя"+(w===curWeek?'<i class="dot"></i>':'');
   });
 }
 function renderList(){
@@ -148,7 +161,7 @@ function renderAll(){renderWeeks();renderDays();renderList()}
 
 document.getElementById("weeks").addEventListener("click",function(e){
   var b=e.target.closest("button");if(!b)return;
-  week=parseInt(b.dataset.w,10);save("sch_week",String(week));renderAll();
+  week=parseInt(b.dataset.w,10);renderAll();
 });
 document.getElementById("days").addEventListener("click",function(e){
   var b=e.target.closest("button");if(!b)return;
