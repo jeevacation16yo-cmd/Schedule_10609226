@@ -60,6 +60,10 @@ h1{margin:0;font-size:28px;letter-spacing:-.02em}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:16px;
   padding:28px 16px;text-align:center;color:var(--muted)}
 .both{font-size:12px;color:var(--muted);margin-left:2px}
+  h1{user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.egg{position:fixed;inset:0;z-index:99;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);padding:20px}
+.egg.show{display:flex}
+.egg img{max-width:100%;max-height:100%;border-radius:16px}
 </style>
 </head>
 <body>
@@ -74,7 +78,11 @@ h1{margin:0;font-size:28px;letter-spacing:-.02em}
 <div class="seg days" id="days" role="tablist" aria-label="День"></div>
 <div class="dayname" id="dayname"></div>
 <main id="list"></main>
+<main id="list"></main>
 
+<div class="egg" id="egg"><img src="photo.jpg" alt=""></div>
+
+<script>
 <script>
 // Каждая пара: [начало 1 половины, конец 1 половины, начало 2 половины, конец 2 половины] (перерыв 5 минут)
 var SLOTS=[
@@ -177,8 +185,13 @@ document.getElementById("days").addEventListener("click",function(e){
   day=parseInt(b.dataset.d,10);renderDays();renderList();
 });
 renderAll();
+var taps=0,tapTimer;
+document.querySelector("h1").addEventListener("click",function(){
+  taps++;clearTimeout(tapTimer);
+  tapTimer=setTimeout(function(){taps=0},1500);
+  if(taps>=5){taps=0;document.getElementById("egg").classList.add("show")}
+});
+document.getElementById("egg").addEventListener("click",function(){this.classList.remove("show")});
 </script>
 </body>
 </html>
-
-</body></html>
