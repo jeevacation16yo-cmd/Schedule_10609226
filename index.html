@@ -47,9 +47,9 @@ h1{margin:0;font-size:28px;letter-spacing:-.02em}
 .dayname{font-size:14px;color:var(--muted);margin:2px 4px 8px}
 .card{display:flex;gap:14px;background:var(--card);border:1px solid var(--line);
   border-radius:16px;padding:14px;margin-bottom:10px}
-.time{flex:0 0 58px;text-align:left}
-.time b{display:block;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
-.time span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.time{flex:0 0 98px;text-align:left}
+.time div{font-size:15px;font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums;white-space:nowrap}
+.time div+div{margin-top:3px;color:var(--muted);font-weight:600}
 .body{min-width:0;flex:1}
 .tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;
   color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent);margin:0 6px 6px 0}
@@ -75,7 +75,14 @@ h1{margin:0;font-size:28px;letter-spacing:-.02em}
 <main id="list"></main>
 
 <script>
-var SLOTS=[["8:00","9:35"],["9:55","11:30"],["11:40","13:15"],["13:55","15:30"],["15:40","17:15"]];
+// Каждая пара: [начало 1 половины, конец 1 половины, начало 2 половины, конец 2 половины] (перерыв 5 минут)
+var SLOTS=[
+  ["8:00","8:45","8:50","9:35"],
+  ["9:55","10:40","10:45","11:30"],
+  ["11:40","12:25","12:30","13:15"],
+  ["13:55","14:40","14:45","15:30"],
+  ["15:40","16:25","16:30","17:15"]
+];
 var DAYS=["ПН","ВТ","СР","ЧТ","ПТ","СБ"];
 var DAYFULL=["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
 var TYPES={lec:["Лекция","--lec"],prac:["Практика","--prac"],lab:["Лабораторная","--lab"],pe:["Занятие","--pe"],oiz:["ОИЗ","--oiz"]};
@@ -84,12 +91,12 @@ var L=[
  {d:0,s:0,w:[1],t:"prac",n:"Философия",p:"проф.Лойко А.И.",r:"а 417 к 1"},
  {d:0,s:0,w:[2],t:"prac",n:"Математика",r:"а 453 к 1"},
  {d:0,s:1,w:[1,2],t:"lec",n:"Философия",p:"проф. Лойко А.И.",r:"а 439 к 1"},
- {d:0,s:2,w:[1],t:"prac",n:"Инженерная графика",r:"а 518 к 8"},
- {d:0,s:2,w:[2],t:"prac",n:"Инженерная графика",r:"а 518 к 8"},
+ {d:0,s:2,w:[1],t:"prac",n:"Инженерная графика",p:"пр.Бонад",r:"а 518 к 8"},
+ {d:0,s:2,w:[2],t:"prac",n:"Инженерная графика",p:"пр.Бонад",r:"а 518 к 8"},
  {d:0,s:3,w:[1,2],t:"prac",n:"Английский язык",p:"пр.Щербакова П.О.",r:"а 431 к 1"},
  {d:1,s:0,w:[1,2],t:"lec",n:"Химия",p:"доц.Стрелкова Е.В.",r:"502 к.18"},
  {d:1,s:1,w:[1,2],t:"prac",n:"Математика",r:"а 407 к 11"},
- {d:1,s:2,w:[1,2],t:"pe",n:"физическая культура",x:1},
+ {d:1,s:2,w:[1,2],t:"pe",n:"физическая культура",r:"спортзал 18к"},
  {d:2,s:0,w:[2],t:"lec",n:"Коррупция и ее общественная опасность",p:"пр.Милинкевич К.А.",r:"а 308 к 6"},
  {d:2,s:1,w:[1],t:"prac",n:"Информатика",r:"а 203 к 3"},
  {d:2,s:1,w:[2],t:"prac",n:"Химия",r:"а 510 к 11"},
@@ -97,14 +104,15 @@ var L=[
  {d:2,s:2,w:[2],t:"lec",n:"Химия",r:"а 341 к 1"},
  {d:2,s:3,w:[1],t:"lec",n:"Математика",p:"ст.пр.Кожевко О.Ф.",r:"а 341 к 1"},
  {d:2,s:3,w:[2],t:"lec",n:"Введение в инженерное образование",p:"ст.пр.Артеменко К.И.",r:"а 341 к 1"},
- {d:3,s:0,w:[1,2],t:"prac",n:"Инженерная графика",r:"а 522 к 8"},
+ {d:3,s:0,w:[1,2],t:"prac",n:"Инженерная графика",p:"пр.Бонад",r:"а 522 к 8"},
  {d:3,s:1,w:[1,2],t:"prac",n:"Информатика",p:"ст.пр.Конохов М.С.",r:"а 308 к 6"},
  {d:3,s:2,w:[1,2],t:"lab",n:"Информатика",r:"а 208 к 3"},
  {d:4,s:0,w:[1,2],t:"lec",n:"Инженерная графика",p:"ст.пр.Дорогокупец Т.В.",r:"а 4 П к 8"},
  {d:4,s:1,w:[1,2],t:"lec",n:"Математика",p:"ст.пр.Кожевко О.Ф.",r:"а 4 П к 8"},
- {d:4,s:2,w:[1,2],t:"pe",n:"физическая культура",x:1},
- {d:5,s:0,w:[2],t:"lec",n:"Инженерная графика",p:"ст.пр.Дорогокупец Т.В.",r:"4 П к 8",note:"ОИЗ"},
- {d:5,s:1,w:[2],t:"lec",n:"Математика",p:"ст.пр.Кожевко О.Ф.",r:"а 3 П к 8",note:"ОИЗ"}
+ {d:4,s:2,w:[1,2],t:"pe",n:"физическая культура",r:"спортзал 18к"},
+ {d:5,s:0,w:[2],t:"lec",n:"Инженерная графика",p:"ст.пр.Дорогокупец Т.В.",r:"4 П к 8",note:"ОИЗ, до 
+   30.09"},
+ {d:5,s:1,w:[2],t:"lec",n:"Математика",p:"ст.пр.Кожевко О.Ф.",r:"а 3 П к 8",note:"ОИЗ, до 30.09"}
 ];
 
 function load(k,def){try{var v=localStorage.getItem(k);return v===null?def:v}catch(e){return def}}
@@ -144,12 +152,13 @@ function renderList(){
   document.getElementById("dayname").textContent=DAYFULL[day]+" · "+week+" неделя"+(day===todayIdx?" · сегодня":"");
   var items=L.filter(function(x){return x.d===day&&x.w.indexOf(week)>-1}).sort(function(a,b){return a.s-b.s});
   var list=document.getElementById("list");
-  if(!items.length){list.innerHTML='<div class="empty">В скриншотах нет занятий на этот день</div>';return}
+  if(!items.length){list.innerHTML='<div class="empty">Выходной</div>';return}
   list.innerHTML=items.map(function(x){
     var t=TYPES[x.t];
+    var sl=SLOTS[x.s];
     var meta=[];if(x.p)meta.push(esc(x.p));if(x.r)meta.push(esc(x.r));
     var both=x.w.length===2?'<span class="both">· обе недели</span>':'';
-    return '<div class="card"><div class="time"><b>'+SLOTS[x.s][0]+'</b><span>'+SLOTS[x.s][1]+'</span></div>'+
+    return '<div class="card"><div class="time"><div>'+sl[0]+'–'+sl[1]+'</div><div>'+sl[2]+'–'+sl[3]+'</div></div>'+
       '<div class="body"><span class="tag" style="--c:var('+t[1]+')">'+t[0]+'</span>'+both+
       '<div class="name">'+esc(x.n)+'</div>'+
       (meta.length?'<div class="meta">'+meta.join(" · ")+'</div>':'')+
